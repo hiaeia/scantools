@@ -1,4 +1,4 @@
-package main
+package scantools
 import (
     "archive/tar"
     "archive/zip"

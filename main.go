@@ -1,13 +1,9 @@
-package main
-
-import (
-	"github.com/hiaeia/scantools"
-)
+package scantools
 
 func main() {
     // log.SetOutput(ioutil.Discard)
     // log.SetFlags(log.Llongfile | log.LstdFlags) // 调试
-    scantools.HandleAnyThing("http://github.com/codingcn/go-web-demo.git")
+    HandleAnyThing("http://github.com/codingcn/go-web-demo.git")
     // HandleAnyThing("/home/lighthouse/test_scan.tar.gz")
     // HandleAnyThing("/home/lighthouse/JxrApp.zip")
     // HandleAnyThing("/home/lighthouse/JxrApp.zip")
