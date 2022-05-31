@@ -16,7 +16,8 @@ func main() {
     scantools.HandleAnyThing(anything)
     // scantools.HandleAnyThing("/home/lighthouse/test_scan.tar.gz")
     // scantools.HandleAnyThing("/home/lighthouse/JxrApp.zip")
-    // scantools.HandleAnyThing("/home/lighthouse/JxrApp.zip")
-    // scantools.HandleAnyThing("/home/lighthouse/SecurityTest/mytools/test_scan")
+    // scantools.HandleAnyThing("/home/lighthouse/test.java")
+    // scantools.HandleAnyThing("/home/lighthouse")
+    // scantools.HandleAnyThing("https://github.com/hiaeia/scantools.git")
 }
 ```
