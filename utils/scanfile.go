@@ -22,7 +22,7 @@ func ScanFile(filePath string) error{
 	//log.Printf("正在扫描:%s...\n", filePath)
 
 	regexpSegment := regexp.MustCompile(`\b(?i)[a-zA-Z_\-\.]*secret\b`)
-	regexpId := regexp.MustCompile(`\b(?i)[a-zA-Z_\-\.]*id\b`)
+	regexpId := regexp.MustCompile(`\b(?i)[a-zA-Z_\-\.]*(id|key)\b`)
 
 	var last = ""
 	reader := bufio.NewReader(f)
