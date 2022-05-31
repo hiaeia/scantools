@@ -88,7 +88,6 @@ func ScanDir(dirname string) error {
 
 // 递归遍历目录
 func ExplorerRecursiveAndScanAndDelete(parentFilePath string) {
-    return
     // 取出节点的信息
     p, err := os.Stat(parentFilePath)
     if err != nil {
