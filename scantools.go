@@ -25,12 +25,14 @@ func HandleAnyThing(anyThing string) {
     if err == nil {
         if(fi.IsDir()) {
             // 目录,直接扫描
+	    log.Printf("识别出目录 %s.", anyThing)
             ScanDir(anyThing)
 	    return
         }
         // 压缩包
         var tarGzReg = regexp.MustCompile(`\.tar\.gz$`)
         if (tarGzReg.MatchString(anyThing)) {
+	    log.Printf("识别出压缩包 %s.", anyThing)
             if err = DeCompressTarGz(anyThing, tempSecurtiyScan); err != nil {
                 log.Printf(err.Error())
                 return
@@ -41,6 +43,7 @@ func HandleAnyThing(anyThing string) {
         }
         var zipReg = regexp.MustCompile(`\.zip$`)
         if (zipReg.MatchString(anyThing)) {
+	    log.Printf("识别出压缩包 %s.", anyThing)
             if err = UnZip(anyThing, tempSecurtiyScan); err != nil {
                 log.Printf(err.Error())
                 return
@@ -50,6 +53,7 @@ func HandleAnyThing(anyThing string) {
             return
         }
         // 普通文件？
+	log.Printf("识别出文件 %s.", anyThing)
         utils.ScanFile(anyThing)
         return
 
@@ -57,6 +61,7 @@ func HandleAnyThing(anyThing string) {
         // git 地址
 	var gitReg = regexp.MustCompile(`^https?://.*\.git$`)
 	if (gitReg.MatchString(anyThing)) {
+	    log.Printf("识别出git地址 %s.", anyThing)
 	    _,err = execCommand("git", []string{"clone", anyThing, tempSecurtiyScan})
 	    if err != nil {
                 log.Printf(err.Error())
@@ -140,6 +145,7 @@ func ExplorerRecursiveAndScanAndDelete(parentFilePath string) {
 
     for _, f := range items {
         childFilePath := path.Join(parentFilePath, f.Name())
+	log.Printf("Found %s.", f.Name())
 
         if f.IsDir() { // 目录
             // 在忽略目录中的目录
