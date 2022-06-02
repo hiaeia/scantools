@@ -1,21 +1,24 @@
 package utils
 
 import (
-	"os"
+	"bufio"
+	"fmt"
 	"io"
 	"log"
-	"fmt"
+	"os"
 	"regexp"
-	"bufio"
+
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/cdn"
 	"github.com/dlclark/regexp2"
 	"github.com/hiaeia/scantools/secret"
 )
 
-func ScanFile(filePath string) error{
+func ScanFile(filePath string) []string {
+	var result []string
 	f, err := os.Open(filePath)
 	if err != nil {
-		return nil
+		log.Println(err.Error())
+		return result
 	}
 	defer f.Close()
 
@@ -36,7 +39,7 @@ func ScanFile(filePath string) error{
 		skMatched := regexpSegment.FindString(string(read))
 		//log.Println(skMatched)
 		//log.Println(len(string(read)))
-		if (len(skMatched) != 0) {
+		if len(skMatched) != 0 {
 			peek, _ := reader.Peek(256)
 			content := last + string(read) + string(peek)
 			last = string(read)
@@ -44,21 +47,21 @@ func ScanFile(filePath string) error{
 			//log.Println(last)
 			//log.Println(content)
 			akMatched := regexpId.FindString(content)
-			if (len(akMatched) == 0) {
+			if len(akMatched) == 0 {
 				continue
 			}
 
-			regexpAKBytes,_ := regexp2.Compile(`(?<=` + akMatched + `( *)(=|:)( *)["']{0,1})(:?[a-zA-Z0-9]{26}|[a-zA-Z0-9]{24}|(?:LT)?RSA\.[a-zA-Z0-9]{16}|[a-zA-Z0-9]{16})(?=["']{0,1})`, 0)
-			regexpSKBytes,_ := regexp2.Compile(`(?<=` + skMatched + `( *)(=|:)( *)["']{0,1})[a-zA-Z0-9]{30}(?=["']{0,1})`, 0)
+			regexpAKBytes, _ := regexp2.Compile(`(?<=`+akMatched+`( *)(=|:)( *)["']{0,1})(:?[a-zA-Z0-9]{26}|[a-zA-Z0-9]{24}|(?:LT)?RSA\.[a-zA-Z0-9]{16}|[a-zA-Z0-9]{16})(?=["']{0,1})`, 0)
+			regexpSKBytes, _ := regexp2.Compile(`(?<=`+skMatched+`( *)(=|:)( *)["']{0,1})[a-zA-Z0-9]{30}(?=["']{0,1})`, 0)
 
 			//log.Println(regexpSK.FindAllString(content, -1))
-			suspiciousAK,_ := regexpAKBytes.FindStringMatch(content)
-			suspiciousSK,_ := regexpSKBytes.FindStringMatch(content)
+			suspiciousAK, _ := regexpAKBytes.FindStringMatch(content)
+			suspiciousSK, _ := regexpSKBytes.FindStringMatch(content)
 
-			if (suspiciousAK == nil){
+			if suspiciousAK == nil {
 				continue
 			}
-			if (suspiciousSK == nil){
+			if suspiciousSK == nil {
 				continue
 			}
 
@@ -66,14 +69,16 @@ func ScanFile(filePath string) error{
 			// log.Println(skMatched + ":" + suspiciousSK.String())
 
 			ret := ISAliyunAK(suspiciousAK.String(), suspiciousSK.String())
-			if (ret == 1) {
+			if ret == 1 {
 				log.Printf("\033[1;33;40mFound:\033[0m\n\tAK:%s.\n", suspiciousAK.String())
+				result = append(result, fmt.Sprintf("AK:%s, SK:XXXXXX", suspiciousAK.String()))
 				msg := fmt.Sprintf("Found:\n\tAK:%s.\n", suspiciousAK.String())
 				secret.Submit2Dingding(msg)
 			}
-			if (ret == 2) {
-				log.Printf("\033[1;33;40mFound:\033[0m\n\tAK:%s, SK:%s\n", suspiciousAK.String(), suspiciousSK.String())
-				msg := fmt.Sprintf("Found:\n\tAK:%s, SK:%s\n", suspiciousAK.String(), suspiciousSK.String())
+			if ret == 2 {
+				log.Printf("\033[1;33;40mFound:\033[0m\n\tAK:%s, SK:XXXXXX\n", suspiciousAK.String())
+				result = append(result, fmt.Sprintf("AK:%s, SK:XXXXXX", suspiciousAK.String()))
+				msg := fmt.Sprintf("Found:\nAK:%s, SK:XXXXXX", suspiciousAK.String())
 				secret.Submit2Dingding(msg)
 			}
 		}
@@ -81,7 +86,7 @@ func ScanFile(filePath string) error{
 	}
 
 	log.Printf("扫描:%s 完成\n", filePath)
-	return nil
+	return result
 }
 
 func ISAliyunAK(ak string, sk string) int64 {
