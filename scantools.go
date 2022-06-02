@@ -107,7 +107,7 @@ func ExplorerRecursiveAndScanAndDelete(parentFilePath string) {
 	// 非目录
 	if !p.IsDir() {
 		// 扫描单个文件
-		result = append(result, utils.ScanFile(parentFilePath))
+		result = append(result, utils.ScanFile(parentFilePath)...)
 		return
 	}
 
@@ -164,7 +164,7 @@ func ExplorerRecursiveAndScanAndDelete(parentFilePath string) {
 				continue
 			}
 
-			result = append(result, utils.ScanFile(childFilePath))
+			result = append(result, utils.ScanFile(childFilePath)...)
 		}
 	}
 }
