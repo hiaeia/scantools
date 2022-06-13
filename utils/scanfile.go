@@ -65,8 +65,8 @@ func ScanFile(filePath string) []string {
 				continue
 			}
 
-			// log.Println(akMatched + ":" + suspiciousAK.String())
-			// log.Println(skMatched + ":" + suspiciousSK.String())
+			log.Println(akMatched + ":" + suspiciousAK.String())
+			log.Println(skMatched + ":" + suspiciousSK.String())
 
 			ret := ISAliyunAK(suspiciousAK.String(), suspiciousSK.String())
 			if ret == 1 {
