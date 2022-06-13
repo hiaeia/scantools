@@ -8,7 +8,9 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/aliyun/alibaba-cloud-sdk-go/services/cdn"
+	 ecs20140526  "github.com/alibabacloud-go/ecs-20140526/v2/client"
+	 openapi  "github.com/alibabacloud-go/darabonba-openapi/client"
+	 util  "github.com/alibabacloud-go/tea-utils/service"
 	"github.com/dlclark/regexp2"
 	"github.com/hiaeia/scantools/secret"
 )
@@ -89,13 +91,20 @@ func ScanFile(filePath string) []string {
 	return result
 }
 
-func ISAliyunAK(ak string, sk string) int64 {
-	client, err := cdn.NewClientWithAccessKey("cn-hangzhou", ak, sk)
+func ISAliyunAK (accessKeyId string, accessKeySecret string) int64 {
+	config := &openapi.Config{
+		AccessKeyId: &accessKeyId,
+		AccessKeySecret: &accessKeySecret,
+	}
 
-	request := cdn.CreateDescribeCdnRegionAndIspRequest()
-	request.Scheme = "https"
+	endpoint := "ecs-cn-hangzhou.aliyuncs.com"
+	config.Endpoint = &endpoint
+	client := &ecs20140526.Client{}
+	client, _ = ecs20140526.NewClient(config)
 
-	_, err = client.DescribeCdnRegionAndIsp(request)
+	describeRegionsRequest := &ecs20140526.DescribeRegionsRequest{}
+	runtime := &util.RuntimeOptions{}
+	_, err := client.DescribeRegionsWithOptions(describeRegionsRequest, runtime)
 	if err != nil {
 		matched, _ := regexp.MatchString("InvalidAccessKeyId.NotFound", err.Error())
 		if matched {
