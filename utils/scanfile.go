@@ -54,7 +54,7 @@ func ScanFile(filePath string) []string {
 			}
 
 			regexpAKBytes, _ := regexp2.Compile(`(?<=`+akMatched+`( *)(=|:)( *)["']{0,1})(:?[a-zA-Z0-9]{26}|[a-zA-Z0-9]{24}|(?:LT)?RSA\.[a-zA-Z0-9]{16}|[a-zA-Z0-9]{16})(?=["']{0,1})`, 0)
-			regexpSKBytes, _ := regexp2.Compile(`(?<=`+skMatched+`( *)(=|:)( *)["']{0,1})[a-zA-Z0-9]{30}(?=["']{0,1})`, 0)
+			regexpSKBytes, _ := regexp2.Compile(`(?<=`+skMatched+`( *)(=|:)( *)["']{0,1})[a-zA-Z0-9]{30,32}(?=["']{0,1})`, 0)
 
 			//log.Println(regexpSK.FindAllString(content, -1))
 			suspiciousAK, _ := regexpAKBytes.FindStringMatch(content)
@@ -67,8 +67,9 @@ func ScanFile(filePath string) []string {
 				continue
 			}
 
-			log.Println(akMatched + ":" + suspiciousAK.String())
-			log.Println(skMatched + ":" + suspiciousSK.String())
+
+			log.Println(akMatched + "-suspicious:" + suspiciousAK.String())
+			log.Println(skMatched + "-suspicious:" + suspiciousSK.String())
 
 			ret := ISAliyunAK(suspiciousAK.String(), suspiciousSK.String())
 			if ret == 1 {
@@ -110,7 +111,7 @@ func ISAliyunAK (accessKeyId string, accessKeySecret string) int64 {
 		if matched {
 			return 0
 		}
-		matched, _ = regexp.MatchString("SignatureDoesNotMatch", err.Error())
+		matched, _ = regexp.MatchString("IncompleteSignature", err.Error())
 		if matched {
 			return 1
 		}
@@ -121,7 +122,6 @@ func ISAliyunAK (accessKeyId string, accessKeySecret string) int64 {
 func test_ScanFile(filePath string) {
 	ScanFile(filePath)
 }
-
 /*
 func main() {
 	var filePath string
