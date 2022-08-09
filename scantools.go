@@ -109,6 +109,7 @@ func ExplorerRecursiveAndScanAndDelete(parentFilePath string) {
         // 非目录，常规文件
         if fi.IsRegular() {
                 // 扫描单个文件
+		log.Printf("常规文件：%s", parentFilePath)
                 result = append(result, utils.ScanFile(parentFilePath)...)
                 return
         }
