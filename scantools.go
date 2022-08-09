@@ -104,12 +104,20 @@ func ExplorerRecursiveAndScanAndDelete(parentFilePath string) {
 		return
 	}
 
-	// 非目录
-	if !p.IsDir() {
-		// 扫描单个文件
-		result = append(result, utils.ScanFile(parentFilePath)...)
-		return
-	}
+	fi := p.Mode()
+
+        // 非目录，常规文件
+        if fi.IsRegular() {
+                // 扫描单个文件
+                result = append(result, utils.ScanFile(parentFilePath)...)
+                return
+        }
+        if !fi.IsDir() {
+                // 忽略设备文件、管道文件、软连接文件，等等
+                log.Printf("忽略非常规文件：%s", parentFilePath)
+                return
+        }
+
 
 	// git 特殊处理
 	if !inGitFlag {
