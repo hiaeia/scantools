@@ -26,7 +26,7 @@ func ScanFile(filePath string) []string {
 
 	//log.Printf("正在扫描:%s...\n", filePath)
 
-	regexpSegment := regexp.MustCompile(`\b(?i)[a-zA-Z_\-\.]*secret\b`)
+	regexpSegment := regexp.MustCompile(`\b(?i)[a-zA-Z_\-\.]*(secret){0,1}\b`)
 	regexpId := regexp.MustCompile(`\b(?i)[a-zA-Z_\-\.]*(id|key)\b`)
 
 	var last = ""
